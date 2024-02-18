@@ -1,0 +1,41 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/************************************************************/
+
+
+USE [dnndev.me]
+GO
+drop procedure [dbo].[TunnelSP]
+
+
+USE [custom]
+GO
+drop TABLE [dbo].[DNN_Beispiel_Kunden]
+GO
+drop TABLE [dbo].[DNN_Beispiel_KundenAnsprechpartner]
+GO
+drop procedure [dbo].[DNN_Beispiel_Kunden_Delete]
+SET QUOTED_IDENTIFIER ON
+GO
+drop procedure [dbo].[DNN_Beispiel_Kunden_Get_Ansprechpartner] 
+GO
+drop procedure [dbo].[DNN_Beispiel_Kunden_Liste]
+GO
+drop procedure [dbo].[DNN_Beispiel_Kunden_Save]
+GO
+drop procedure [dbo].[DNN_Beispiel_KundenAnsprechpartner_Delete]
+GO
+drop procedure [dbo].[DNN_Beispiel_KundenAnsprechpartner_Save]
+                      

@@ -1,0 +1,330 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/************************************************************/
+
+
+USE [dnndev.me]
+GO
+
+/****** Object:  StoredProcedure [dbo].[TunnelSP]    Script Date: 18.02.2024 18:15:34 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE procedure [dbo].[TunnelSP](@SP varchar(max))
+as
+exec('custom.dbo.'+@SP)
+
+Select 'Geschafft'  as Antwort
+GO
+
+
+USE [custom]
+GO
+/****** Object:  Table [dbo].[DNN_Beispiel_Kunden]    Script Date: 18.02.2024 17:47:18 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DNN_Beispiel_Kunden](
+	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[Name1] [varchar](56) NOT NULL,
+	[Name2] [varchar](56) NULL,
+	[Strasse] [varchar](56) NOT NULL,
+	[Land] [varchar](8) NOT NULL,
+	[PLZ] [varchar](8) NOT NULL,
+	[Ort] [varchar](56) NOT NULL,
+	[BLN_Delete] [bit] NOT NULL,
+	[user_create] [bigint] NOT NULL,
+	[timestamp_create] [datetime] NOT NULL,
+	[user_modify] [bigint] NOT NULL,
+	[timestamp_modify] [datetime] NOT NULL,
+ CONSTRAINT [PK_DNN_Beispiel_Kunden] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[DNN_Beispiel_KundenAnsprechpartner]    Script Date: 18.02.2024 17:47:18 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DNN_Beispiel_KundenAnsprechpartner](
+	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[ID_Kunde] [bigint] NOT NULL,
+	[Anrede] [varchar](16) NULL,
+	[Vorname] [varchar](56) NULL,
+	[Nachname] [varchar](56) NULL,
+	[Telefon] [varchar](56) NULL,
+	[Fax] [varchar](56) NULL,
+	[Email] [varchar](152) NULL,
+	[Mobil] [varchar](56) NULL,
+	[user_create] [bigint] NOT NULL,
+	[timestamp_create] [datetime] NOT NULL,
+	[user_modify] [bigint] NOT NULL,
+	[timestamp_modify] [datetime] NOT NULL,
+ CONSTRAINT [PK_DNN_Beispiel_KundenAnsprechpartner] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[DNN_Beispiel_Kunden] ADD  DEFAULT ((0)) FOR [BLN_Delete]
+GO
+ALTER TABLE [dbo].[DNN_Beispiel_Kunden] ADD  DEFAULT (getdate()) FOR [timestamp_create]
+GO
+ALTER TABLE [dbo].[DNN_Beispiel_Kunden] ADD  DEFAULT (getdate()) FOR [timestamp_modify]
+GO
+ALTER TABLE [dbo].[DNN_Beispiel_KundenAnsprechpartner] ADD  DEFAULT (getdate()) FOR [timestamp_create]
+GO
+ALTER TABLE [dbo].[DNN_Beispiel_KundenAnsprechpartner] ADD  DEFAULT (getdate()) FOR [timestamp_modify]
+GO
+/****** Object:  StoredProcedure [dbo].[DNN_Beispiel_Kunden_Delete]    Script Date: 18.02.2024 17:47:18 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[DNN_Beispiel_Kunden_Delete]
+                        @ModuleID				int,
+						@ID						int,
+						@UserID					int
+
+AS
+BEGIN
+
+	if @ID > 1
+		UPDATE DNN_Beispiel_Kunden
+			SET	user_modify = @UserID
+				,timestamp_modify = getdate()
+				,BLN_Delete = 1
+			WHERE ID = @ID
+	 
+	select 1
+	return 1
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[DNN_Beispiel_Kunden_Get_Ansprechpartner]    Script Date: 18.02.2024 17:47:18 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE procedure [dbo].[DNN_Beispiel_Kunden_Get_Ansprechpartner] 
+				@ID_Kunde	int
+AS
+begin
+	SELECT ID
+		  ,ID_Kunde
+		  ,Anrede
+		  ,Vorname
+		  ,Nachname
+		  ,Telefon
+		  ,Fax
+		  ,Email
+		  ,Mobil
+	  FROM DNN_Beispiel_KundenAnsprechpartner
+	  WHERE ID_Kunde = @ID_Kunde
+
+end
+GO
+/****** Object:  StoredProcedure [dbo].[DNN_Beispiel_Kunden_Liste]    Script Date: 18.02.2024 17:47:18 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[DNN_Beispiel_Kunden_Liste]
+AS
+begin
+	SELECT ID
+		  ,Name1
+		  ,Name2
+		  ,Strasse
+		  ,Land
+		  ,PLZ
+		  ,Ort
+	FROM DNN_Beispiel_Kunden
+	WHERE BLN_Delete = 0
+
+
+end
+GO
+/****** Object:  StoredProcedure [dbo].[DNN_Beispiel_Kunden_Save]    Script Date: 18.02.2024 17:47:18 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[DNN_Beispiel_Kunden_Save]
+                        @ModuleID				int,
+						@ID						int,
+						@Name1					varchar(50),
+						@Name2					varchar(50),
+						@Strasse				varchar(50),
+						@Land					varchar(5),
+						@PLZ					varchar(10),
+						@Ort					varchar(50),
+						@UserID					int
+
+AS
+BEGIN
+
+	if @ID < 1
+		INSERT INTO DNN_Beispiel_Kunden
+				   (Name1
+				   ,Name2
+				   ,Strasse
+				   ,Land
+				   ,PLZ
+				   ,Ort
+				   ,BLN_Delete
+				   ,user_create
+				   ,timestamp_create
+				   ,user_modify
+				   ,timestamp_modify
+				   )
+			 VALUES
+				   (@Name1
+				   ,@Name2
+				   ,@Strasse
+				   ,@Land
+				   ,@PLZ
+				   ,@Ort
+				   ,0
+				   ,@UserID
+				   ,getdate()
+				   ,@UserID
+				   ,getdate()
+				   )
+	else
+		UPDATE DNN_Beispiel_Kunden
+			   SET	 Name1 = @Name1
+					,Name2 = @Name2
+					,Strasse = @Strasse
+					,Land = @Land
+					,PLZ = @PLZ
+					,Ort = @Ort
+					,user_modify = @UserID
+					,timestamp_modify = getdate()
+			 WHERE ID = @ID
+
+	if (@@error <> 0) goto on_err
+	 
+	select 1
+	return 1
+
+on_err: 
+	select -1
+	return -1
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[DNN_Beispiel_KundenAnsprechpartner_Delete]    Script Date: 18.02.2024 17:47:18 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[DNN_Beispiel_KundenAnsprechpartner_Delete]
+                        @ModuleID				int,
+						@ID						int,
+						@UserID					int
+
+AS
+BEGIN
+
+	if @ID > 0
+		DELETE DNN_Beispiel_KundenAnsprechpartner
+			WHERE ID = @ID
+	 
+	select 1
+	return 1
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[DNN_Beispiel_KundenAnsprechpartner_Save]    Script Date: 18.02.2024 17:47:18 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE procedure [dbo].[DNN_Beispiel_KundenAnsprechpartner_Save]
+                        @ModuleID		int,
+                        @ID_Kunde		int,
+						@ID				int,
+						@Anrede			nvarchar(10),
+						@Vorname		nvarchar(50),
+						@Nachname		nvarchar(50),
+						@Email			nvarchar(150),
+						@Telefon		nvarchar(50),
+						@Mobil			nvarchar(50),
+						@Fax			nvarchar(50),
+						@UserID			int
+
+AS
+BEGIN
+
+	if @ID < 1
+		INSERT INTO DNN_Beispiel_KundenAnsprechpartner
+				   (ID_Kunde
+				   ,Anrede
+				   ,Vorname
+				   ,Nachname
+				   ,Telefon
+				   ,Fax
+				   ,Email
+				   ,Mobil
+				   ,user_create
+				   ,timestamp_create
+				   ,user_modify
+				   ,timestamp_modify)
+			 VALUES
+				   (@ID_Kunde
+				   ,@Anrede
+				   ,@Vorname
+				   ,@Nachname
+				   ,@Telefon
+				   ,@Fax
+				   ,@Email
+				   ,@Mobil
+				   ,@UserID
+				   ,getdate()
+				   ,@UserID
+				   ,getdate())
+	else
+		UPDATE DNN_Beispiel_KundenAnsprechpartner
+			   SET	Anrede = @Anrede
+					,Vorname = @Vorname
+					,Nachname = @Nachname
+					,Telefon = @Telefon
+					,Fax = @Fax
+					,Email = @Email
+					,Mobil = @Mobil
+					,user_modify = @UserID
+					,timestamp_modify = getdate()
+			 WHERE ID = @ID and ID_Kunde = @ID_Kunde
+
+	if (@@error <> 0) goto on_err
+	 
+	select 1
+	return 1
+
+on_err: 
+	select -1
+	return -1
+
+END
+GO
